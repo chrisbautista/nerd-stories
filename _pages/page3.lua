@@ -15,6 +15,13 @@ local scene = composer.newScene()
 
 local background
 
+local bgmChannel
+local voice
+
+local d1;
+
+
+
 local function dashOne(_sceneGroup, _func)
 
 	local grp  = display.newGroup( )
@@ -54,9 +61,8 @@ function scene:create( event )
     -- load bg
    background = story.bg( sceneGroup, "pagebg.png")
 
-   local d1;
-   local d2;
 
+   -- this will be the elements of your page
    d1 = dashOne(sceneGroup, function ()  end)
 
 
@@ -65,7 +71,7 @@ function scene:create( event )
 			local options = {
 		    	effect = "slideLeft",
 		    	time = 500,
-		    	params = { level="Level 1", score=currentScore }
+		    	params = {  }
 			}
 
 			composer.gotoScene( "_pages.page4", options );
@@ -81,6 +87,25 @@ function scene:create( event )
    sceneGroup:insert( d1 )
    sceneGroup:insert( btn1 )
 
+    -- add menu
+    local btnHome = display.newImageRect( sceneGroup, story.imgBtnPath .. "/" .. "home.png", 90, 90 )
+    btnHome.x = display.contentWidth - 80;
+    btnHome.y = 60
+    sceneGroup:insert( btnHome )
+
+    btnHome:addEventListener( "tap", function (event) 
+
+      local options = {
+          effect = "slideRight",
+          time = 500,
+          params = {  }
+      }
+
+      composer.gotoScene("_pages.title",options)
+
+     end );
+
+
 end
 
 
@@ -92,10 +117,17 @@ function scene:show( event )
 
     if ( phase == "will" ) then
         -- Called when the scene is still off screen (but is about to come on screen).
+
+
+
     elseif ( phase == "did" ) then
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+
+
+
+
     end
 end
 
@@ -110,6 +142,8 @@ function scene:hide( event )
         -- Called when the scene is on screen (but is about to go off screen).
         -- Insert code here to "pause" the scene.
         -- Example: stop timers, stop animation, stop audio, etc.
+
+
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
     end

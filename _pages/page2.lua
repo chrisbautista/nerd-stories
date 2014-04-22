@@ -15,6 +15,14 @@ local scene = composer.newScene()
 
 local background
 
+local bgmChannel
+
+local voice 
+
+local d1; -- sprites
+
+local btn1
+
 local function dashOne(_sceneGroup, _func)
 
 	local grp  = display.newGroup( )
@@ -66,18 +74,16 @@ function scene:create( event )
     -- load bg
    background = story.bg( sceneGroup, "pagebg.png")
 
-   local d1;
-   local d2;
 
    d1 = dashOne(sceneGroup, function ()  end)
 
 
-	local btn1 = story.button(story.btnNext, display.contentWidth - 160 , display.contentHeight - 80 , 
+	btn1 = story.button(story.btnNext, display.contentWidth - 160 , display.contentHeight - 80 , 
 		function () 
 			local options = {
 		    	effect = "slideLeft",
 		    	time = 500,
-		    	params = { level="Level 1", score=currentScore }
+		    	params = { }
 			}
 
 			composer.gotoScene( "_pages.page3", options );
@@ -93,6 +99,25 @@ function scene:create( event )
    sceneGroup:insert( d1 )
    sceneGroup:insert( btn1 )
 
+    -- add menu
+    local btnHome = display.newImageRect( sceneGroup, story.imgBtnPath .. "/" .. "home.png", 90, 90 )
+    btnHome.x = display.contentWidth - 100;
+    btnHome.y = 60
+    sceneGroup:insert( btnHome )
+
+    btnHome:addEventListener( "tap", function (event) 
+
+      local options = {
+          effect = "slideRight",
+          time = 500,
+          params = {  }
+      }
+
+      composer.gotoScene("_pages.title",options)
+
+     end );
+   
+
 end
 
 
@@ -104,10 +129,58 @@ function scene:show( event )
 
     if ( phase == "will" ) then
         -- Called when the scene is still off screen (but is about to come on screen).
+       -- bgmChannel = story.loadBg("title.wav")
+
+        -- d1[1].isVisible = false
+        -- d1[2].isVisible = false
+        -- d1[3].isVisible = false
+        -- d1[4].isVisible = false
+        -- d1[5].isVisible = false
+        -- d1[6].isVisible = false
+
+       for i=1,d1.numChildren do
+
+          d1[i].isVisible = false
+
+       end
+
+
+
     elseif ( phase == "did" ) then
         -- Called when the scene is now on screen.
         -- Insert code here to make the scene come alive.
         -- Example: start timers, begin animation, play audio, etc.
+        -- play voice
+
+        voice = story.loadVoice("page2.m4a")
+
+        -- load first sprite
+        d1[1].isVisible = true;
+        d1[2].isVisible = true;
+        d1[2].alpha = 0;
+
+        transition.to( d1[2], { time=500, delay=1500, alpha=1.0, onComplete=function (event) 
+
+            d1[5].isVisible = true;
+            d1[3].isVisible = true;
+            d1[3].alpha = 0;
+
+            transition.to( d1[3], { time=500, delay=1500, alpha=1.0, onComplete=function (event) 
+
+              d1[4].isVisible = true;
+              d1[4].alpha = 0;
+
+                transition.to( d1[4], { time=500, delay=1500, alpha=1.0, onComplete=function (event) 
+
+                  d1[6].isVisible = true; 
+
+                end }  )
+
+            end }  )
+
+        end }  )
+        
+
     end
 end
 
@@ -122,6 +195,18 @@ function scene:hide( event )
         -- Called when the scene is on screen (but is about to go off screen).
         -- Insert code here to "pause" the scene.
         -- Example: stop timers, stop animation, stop audio, etc.
+
+      --  story.stopBg(bgmChannel)
+        story.stopVoice(voice)
+
+       for i=1,d1.numChildren do
+
+          d1[i].isVisible = true
+          d1[i].alpha = false
+
+       end
+
+
     elseif ( phase == "did" ) then
         -- Called immediately after scene goes off screen.
     end

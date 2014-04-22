@@ -1,9 +1,12 @@
 -- story lib
 
-local display = require( "display" )
-
 local story = {}
 
+-- switches
+
+story.bgOn = true
+story.soundOn = true
+story.autoOn = true
 
 
 -- Language
@@ -18,8 +21,13 @@ story.btnSettings  = "Settings"
 story.btnStart = "Start"
 story.btnReadme = "Read to Me"
 
+story.btnSoundOn = "Sound On"
+story.btnSoundOff = "Sound Off"
 
--- 
+
+
+
+-- Directories 
 story.imgPath = "_assets/img"
 story.imgBgPath = story.imgPath .. "/background"
 story.imgBtnPath = story.imgPath .. "/buttons"
@@ -134,6 +142,109 @@ function story.button( ... )
 	return btnGrp;
 end
 
+
+function story.loadBg(...)
+
+	if (not story.soundOn) then
+		audio.setVolume( 0 )
+	end 
+	local arg = {n=select('#', ... ), ... }
+
+	if(arg.n < 1) then
+		error( "error: missing parameters" )
+		return false;
+	end
+
+	local bgm = audio.loadStream( story.musicPath .. "/" .. arg[1] );
+
+		local options =
+		{
+		    channel=1,
+		    loops=-1,
+			fadein=2000,
+		}
+
+		--audio.setVolume( 0.5 , 1 )
+	    local bgmChannel = audio.play( bgm , options)
+
+	    return bgmChannel;
+
+end
+
+function story.stopBg(bgmChannel)
+	if(story.soundOn)then
+		audio.setVolume( 0.5 )
+	end
+		if(bgmChannel) then 
+			print("bgm is OK")
+			if(audio.isChannelPlaying(1)) then
+				audio.stop( 1 )
+			end
+		end 
+	--end
+end
+
+function story.loadVoice(...)
+
+	if (not story.soundOn) then
+		audio.setVolume( 0 )
+	end 
+	local arg = {n=select('#', ... ), ... }
+
+	if(arg.n < 1) then
+		error( "error: missing parameters" )
+		return false;
+	end
+
+	local bgm = audio.loadSound( story.voicePath .. "/" .. arg[1] );
+
+		local options =
+		{
+		    channel=2,
+		    --loops=1,
+			fadein=2000,
+		}
+
+		--audio.setVolume( 0.5 , 1 )
+	    local voiceChannel = audio.play( bgm , options)
+
+	    return voiceChannel;
+
+end
+
+function story.stopVoice(voiceChannel)
+	if(story.soundOn)then
+		audio.setVolume( 1 )
+	end
+		if(voiceChannel) then 
+			print("voice is OK")
+			if(audio.isChannelPlaying(2)) then
+				audio.stop( 2 )
+			end
+		end 
+	--end
+end
+
+function story.addText(...)
+
+	local arg = {n=select('#', ... ), ... }
+
+	if(arg.n < 1) then
+		error( "error: missing parameters" )
+		return false;
+	end
+
+    local pageText = display.newText( book.text[5] , 0, 0, 550 , 400 , native.systemFont, 35 )
+    pageText.x =  display.contentWidth/2 + 150  
+    pageText.y = 270 --display.contentHeight 300
+
+
+end
+
+
 -- return
+
+
+
 
 return story

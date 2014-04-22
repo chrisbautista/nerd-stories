@@ -15,6 +15,10 @@ local scene = composer.newScene()
 
 -- forward declaration
 local background
+local bgm
+local bgmChannel
+local btn3
+
 
 function scene:create( event )
 	local sceneGroup = self.view
@@ -30,10 +34,10 @@ function scene:create( event )
 	-- Add more text
 	local pageText = story.title(story.titleText)
 
-	local btn1 = story.button(story.btnStart, display.contentWidth * 0.5, (display.contentHeight *0.5) + 50 , 
+	local btn1 = story.button(story.btnStart, display.contentWidth * 0.5, (display.contentHeight *0.5) + 30 , 
 		function () 
 			local options = {
-		    	effect = "slideLeft",
+		    	effect = "fade",
 		    	time = 500,
 		    	params = { level="Level 1", score=currentScore }
 			}
@@ -42,16 +46,63 @@ function scene:create( event )
 
 			return true;	-- indicates successful touch
 		end , 
-		{230 , 100}	);
+		{430 , 100}	);
 
 
-	-- play music here
-	-- story.bgm("title")
+	local btn2 = story.button(story.btnReadme, display.contentWidth * 0.5, (display.contentHeight *0.5) + 150 , 
+		function () 
+			local options = {
+		    	effect = "fade",
+		    	time = 500,
+		    	params = { readTome = true }
+			}
+
+			composer.gotoScene( "_pages.page1", options )
+
+			return true;	-- indicates successful touch
+		end , 
+		{430 , 100}	);
+
+	local btntxt 
+	
+	if(story.soundOn) then
+		btntxt = story.btnSoundOn
+	else
+		btntxt = story.btnSoundOff
+	end
+		
+	btn3 = story.button(btntxt, display.contentWidth * 0.5, (display.contentHeight *0.5) + 270 , 
+		function ( self, event) 
+
+			print(btn3[2])
+			if(story.soundOn) then
+				story.soundOn = false
+				btn3[2].text = ( story.btnSoundOff )
+				--audio.stop()
+				audio.setVolume( 0 )
+			else 
+				story.soundOn = true
+				btn3[2].text =( story.btnSoundOn )
+				audio.setVolume( 1 )			end 
+
+			return true;	-- indicates successful touch
+		end , 
+		{430 , 100}	);
+
+
+	-- load music here
+
+
 
 	-- all display objects must be inserted into group
 	sceneGroup:insert( background )
 	sceneGroup:insert( pageText )
 	sceneGroup:insert( btn1 )
+	sceneGroup:insert( btn2 )
+	sceneGroup:insert( btn3 )
+
+	-- hide all
+
 end
 
 function scene:show( event )
@@ -60,6 +111,7 @@ function scene:show( event )
 	
 	if phase == "will" then
 		-- Called when the scene is still off screen and is about to move on screen
+
 	elseif phase == "did" then
 		-- -- Called when the scene is now on screen
 		
@@ -68,6 +120,10 @@ function scene:show( event )
 		
 		--  background.touch = onBackgroundTouch
 		--  background:addEventListener( "touch", background )
+
+		bgmChannel = story.loadBg("title.wav")
+
+
 	end
 end
 
@@ -83,9 +139,15 @@ function scene:hide( event )
 
 		-- -- remove event listener from background
 		-- background:removeEventListener( "touch", background )
+
+		story.stopBg( bgmChannel )
+		--audio.dispose( bgmChannel )
+
 		
 	elseif phase == "did" then
 		-- Called when the scene is now off screen
+
+
 	end	
 end
 
